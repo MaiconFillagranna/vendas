@@ -8,7 +8,7 @@ require_once 'header.php';
         <div class="centro">
             <h3 class="textos">Cadastro de Produto</h3><br>
             <div class="form-group">
-                <form action="../controller/ControllerProduto.php" method="post">
+                <form method="post" id="formProduto">
                     <label>Descrição:</label>
                     <input type="text" class="form-control" id="descricao" name="descricao" required><br>
                     <label>Preço:</label>
@@ -17,6 +17,7 @@ require_once 'header.php';
                 </form>
             </div>
         </div>
+        <script type="text/javascript" src="js/scriptProduto.js"></script>
     </body>
 </html>
 
