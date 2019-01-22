@@ -1,12 +1,36 @@
 <?php
 
-require_once 'Connection.php';
+require_once 'Query.php';
 
-$Conn = Connection::getInstance();
-$Conn->getConn();
+header('Content-type: application/json');
 
-$a = 1;
+$Controller = new ControllerProduto();
 
+switch(filter_input(INPUT_SERVER, "REQUEST_METHOD")) {
+    case "POST":
+        $Controller->save();
+        break;
+    case "GET":
+        $Controller->search();
+}
 
-
-echo json_encode('asdsdd');
+class ControllerProduto {
+    
+    public function save() {
+        $descricao = filter_input(INPUT_POST, "descricao");
+        $preco = filter_input(INPUT_POST, "preco");
+        $SQL = "INSERT INTO produto VALUES (null, $descricao, $preco)";
+        $Query = Query::getInstance();
+        if($Query->save($SQL)) {
+            echo(json_encode("success"));
+        }
+        else {
+            echo(json_encode("error"));
+        }
+    }
+    
+    public function search() {
+        
+    }
+    
+}

@@ -2,7 +2,6 @@
 require_once 'header.php';
 ?>
 
-<!DOCTYPE html>
 <html>
     <body>
         <div class="centro">
