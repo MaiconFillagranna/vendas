@@ -30,7 +30,16 @@ class ControllerProduto {
     }
     
     public function search() {
-        
+        $search = filter_input(INPUT_POST, "search");
+        $SQL = "SELECT * FROM produto WHERE descricao ILIKE '$search'";
+        $Query = Query::getInstance();
+        $produto = $Query->getFirstRow($SQL);
+        if(!empty($produto)) {
+            echo(json_encode($produto));
+        }
+        else {
+            echo(json_encode('nenhum'));
+        }
     }
     
 }

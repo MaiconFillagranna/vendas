@@ -1,8 +1,51 @@
 <?php
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+require_once 'Query.php';
 
+header('Content-type: application/json');
+
+$Controller = new ControllerVenda();
+
+$method = filter_input(INPUT_SERVER, "REQUEST_METHOD");
+$requisicao = filter_input($method, "requisicao");
+switch($requisicao) {
+    case "increment":
+        $Controller->save();
+        break;
+    case "insert":
+        $Controller->save();
+        break;
+    case "consulta":
+        $Controller->search();
+        break;
+}
+
+class ControllerVenda {
+    
+    public function save() {
+        $descricao = filter_input(INPUT_POST, "descricao");
+        $preco = filter_input(INPUT_POST, "preco");
+        $SQL = "INSERT INTO produto VALUES (null, $descricao, $preco)";
+        $Query = Query::getInstance();
+        if($Query->save($SQL)) {
+            echo(json_encode("success"));
+        }
+        else {
+            echo(json_encode("error"));
+        }
+    }
+    
+    public function search() {
+        $search = filter_input(INPUT_POST, "search");
+        $SQL = "SELECT * FROM produto WHERE descricao ILIKE '$search'";
+        $Query = Query::getInstance();
+        $produto = $Query->getFirstRow($SQL);
+        if(!empty($produto)) {
+            echo(json_encode($produto));
+        }
+        else {
+            echo(json_encode('nenhum'));
+        }
+    }
+    
+}
