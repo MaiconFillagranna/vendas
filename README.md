@@ -1,1 +1,2 @@
-# vendas
+Não é necessário executar nenhum script para criação de tabelas ou de database.
+O sistema está criando a conexão utilizando o usuário "root", senha vazia e o host 127.0.0.1, caso suas configurações sejam diferentes, mude as constantes da classe Query.

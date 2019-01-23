@@ -6,46 +6,71 @@ header('Content-type: application/json');
 
 $Controller = new ControllerVenda();
 
-$method = filter_input(INPUT_SERVER, "REQUEST_METHOD");
+$method = filter_input(INPUT_SERVER, "REQUEST_METHOD") == "GET" ? 1 : 0;
 $requisicao = filter_input($method, "requisicao");
+$venda = filter_input($method, "venda");
 switch($requisicao) {
-    case "increment":
-        $Controller->save();
+    case "vendaAtual":
+        $Controller->getVendaAtual();
         break;
     case "insert":
-        $Controller->save();
+        $Controller->save($venda);
+        break;
+    case "delete":
+        $Controller->delete($venda);
         break;
     case "consulta":
-        $Controller->search();
+        $Controller->getAllVendas();
         break;
 }
 
 class ControllerVenda {
     
-    public function save() {
-        $descricao = filter_input(INPUT_POST, "descricao");
-        $preco = filter_input(INPUT_POST, "preco");
-        $SQL = "INSERT INTO produto VALUES (null, $descricao, $preco)";
+    public function getVendaAtual() {
+        $SQL = "SELECT COALESCE(MAX(numero)+1,1) as numero FROM documento";
         $Query = Query::getInstance();
-        if($Query->save($SQL)) {
-            echo(json_encode("success"));
-        }
-        else {
-            echo(json_encode("error"));
+        $numero = $Query->getFirstRow($SQL)->numero;
+        echo json_encode($numero);
+    }
+    
+    public function save($venda) {
+        $SQL = "UPDATE documento SET confirmado = 1 WHERE numero = $venda";
+        echo json_encode(Query::getInstance()->execute($SQL));
+    }
+    
+    public function getAllVendas() {
+        $SQL = "SELECT * FROM documento WHERE confirmado = 1";
+        echo json_encode(Query::getInstance()->getAllRows($SQL));
+    }
+    
+    public function delete($venda) {
+        $SQL = "DELETE FROM documento WHERE numero = $venda";
+        echo json_encode(Query::getInstance()->execute($SQL));
+    }
+    
+    public function adicionaProduto($venda, $Produto) {
+        $this->insertVendaIfNotExists($venda, $Produto);
+        $this->insertItem($venda, $Produto);
+    }
+    
+    private function insertVendaIfNotExists($venda, $Produto) {
+        $SQL = "SELECT EXISTS (SELECT numero FROM documento WHERE numero = $venda) as existe";
+        $Query = Query::getInstance();
+        if($Query->getFirstRow($SQL)->existe == 0) {
+            $SQL2 = "INSERT INTO documento VALUES ($venda, $Produto->preco, 0)";
+            $Query->save($SQL2);
         }
     }
     
-    public function search() {
-        $search = filter_input(INPUT_POST, "search");
-        $SQL = "SELECT * FROM produto WHERE descricao ILIKE '$search'";
-        $Query = Query::getInstance();
-        $produto = $Query->getFirstRow($SQL);
-        if(!empty($produto)) {
-            echo(json_encode($produto));
-        }
-        else {
-            echo(json_encode('nenhum'));
-        }
+    private function insertItem($venda, $Produto) {
+        $SQL = "INSERT INTO item VALUES ($venda, $Produto->id)";
+        Query::getInstance()->save($SQL);
+        $this->updateTotalVenda($venda, $Produto);
+    }
+    
+    private function updateTotalVenda($venda, $Produto) {
+        $SQL = "UPDATE documento SET total = total+$Produto->preco WHERE numero = $venda";
+        Query::getInstance()->execute($SQL);
     }
     
 }

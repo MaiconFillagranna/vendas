@@ -29,12 +29,11 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-list-alt"></span> Consultas <span class="caret"></span></a>
                             <ul class="dropdown-menu">
+                                <li><a href="consultaProduto.php">Produtos</a></li>
+                                <li role="separator" class="divider"></li>
                                 <li><a href="consultaVenda.php">Vendas</a></li>
                             </ul>
                         </li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li><a href="login.html"><span class="glyphicon glyphicon-log-out"></span> Sair</a></li>
                     </ul>
                 </div>
             </div>
